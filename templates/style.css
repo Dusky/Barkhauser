@@ -1,0 +1,31 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+#fileList {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding-left: 0;
+}
+
+#fileList li {
+    border-bottom: 1px solid #eee;
+    padding: 10px;
+}
+
+#fileList li:last-child {
+    border-bottom: none;
+}
+
+audio {
+    width: 100%; /* Make audio player take up full list item width */
+}

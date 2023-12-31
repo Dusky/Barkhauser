@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WAV Player and Text Runner</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        // Existing script elements ...
+
+        // Function to handle form submission
+        function runScript(e) {
+            e.preventDefault();
+            let textInput = document.getElementById('textInput').value;
+            fetch('/run-script', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({text: textInput}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert("Error running script: " + data.error);
+                } else {
+                    // Handle the result here. Maybe display it or refresh part of your page.
+                    console.log("Script result:", data.result);
+                }
+            });
+        }
+    </script>
+<script>
+    let knownFiles = new Set(); // Tracks known files
+
+    // Function to refresh the list of files
+    function refreshFiles() {
+        fetch('/update-files').then(response => response.json()).then(data => {
+            let newFiles = new Set(data.files);
+
+            // Determine if there are any new files
+            let isNewFileDetected = [...newFiles].some(x => !knownFiles.has(x));
+
+            // If a new file is detected, refresh the page
+            if (isNewFileDetected) {
+                window.location.reload();
+            } else {
+                // Update the known files if no new file is detected
+                knownFiles = newFiles;
+            }
+        });
+    }
+
+    // Poll every 5 seconds to check for new files
+    setInterval(refreshFiles, 5000);
+</script>
+
+
+
+</head>
+<body>
+    <h1>WAV Files</h1>
+    <ul id="fileList">
+        {% for file in files %}
+            <li>
+                {{ file }} <br>
+                <audio controls>
+                    <source src="{{ url_for('audio', filename=file) }}" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Pagination Controls -->
+    <div>
+        {% for i in range(1, pages + 1) %}
+            <a href="{{ url_for('index', page=i) }}">{{ i }}</a>
+        {% endfor %}
+    </div>
+</body>
+</html>
